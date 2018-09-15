@@ -25,7 +25,7 @@ __copyright__ = "Copyright (C) 2018 by Diptarshi Chakraborty"
 # Redistribution, modification or use of this software in source or binary
 # forms is permitted as long as the files maintain this copyright. Users are
 # permitted to modify this and use it to learn about the field of embedded
-# software. Bruce Montgomery and the University of Colorado
+# software. Diptarshi Chakraborty and the University of Colorado
 # are not liable for any misuse of this material.
 #
 
