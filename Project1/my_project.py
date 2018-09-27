@@ -7,10 +7,18 @@ from PyQt5.QtCore import pyqtSlot
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+import datetime
+
 
 import Adafruit_DHT
-temperature_old=0;
-humidity_old=0;
+temperature_old=0
+humidity_old=0
+count_temp=0;
+count_humidity=0
+temperature_avg=0
+humidity_avg=0
+temperature_tot=0
+humidity_tot=0
  
 class App(QWidget):
 
@@ -81,30 +89,72 @@ class App(QWidget):
     
     
   def showtemp(self):
+    global temperature_old
+    global count_temp
+    global temperature_avg
+    global temperature_tot
+    
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Information)
+    if humidity is not None and temperature is not None:
+      now = datetime.datetime.now()
+      count_temp=count_temp+1
+      temperature_tot=temperature_tot+temperature
+      temperature_avg=(temperature_tot)/(count_temp)
+      print (now.strftime("%H:%M:%S"))
+      msg = QMessageBox()
+      msg.setIcon(QMessageBox.Information)
 
-    msg.setText("You have selected the option to see temperature.The device is properly connected")
-    msg.setInformativeText("This is additional information")
-    msg.setWindowTitle("MessageBox demo")
-    msg.setDetailedText("The temperature is : " + str(temperature) +" "+"C")
-    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+      msg.setText("You have selected the option to see temperature.The sensor is properly connected")
+      msg.setInformativeText("This is additional information")
+      msg.setWindowTitle("MessageBox demo")
+      msg.setDetailedText("The temperature is : " + str(temperature) +" "+"C at "+now.strftime("%H:%M:%S"))
+      msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    else:
+      now = datetime.datetime.now()
+      print (now.strftime("%H:%M:%S"))
+      msg = QMessageBox()
+      msg.setIcon(QMessageBox.Information)
+
+      msg.setText("The sensor is disconnected")
+      msg.setInformativeText("Click on show details to see avg temperature")
+      msg.setWindowTitle("MessageBox demo")
+      msg.setDetailedText("The temperature is : " + str(temperature_avg) +" "+"C at "+now.strftime("%H:%M:%S"))
+      msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel) 
 
 	
     retval = msg.exec_()
     print ("value of pressed message box button:" + str(retval))
 
   def showhumidity(self):
+    global humidity_tot
+    global humidity_avg
+    global count_humidity
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Information)
+    if humidity is not None and temperature is not None:
+      count_humidity=count_humidity+1
+      humidity_tot=humidity_tot+humidity
+      humidity_avg=(humidity_tot)/(count_humidity)
+      now = datetime.datetime.now()
+      print (now.strftime("%H:%M:%S"))
+      msg = QMessageBox()
+      msg.setIcon(QMessageBox.Information)
 
-    msg.setText("You have selected the option to see humidity.The device is properly connected")
-    msg.setInformativeText("This is additional information")
-    msg.setWindowTitle("MessageBox demo")
-    msg.setDetailedText("The humidity is : " + str(humidity) +" "+"%")
-    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+      msg.setText("You have selected the option to see humidity.The sensor is properly connected")
+      msg.setInformativeText("This is additional information")
+      msg.setWindowTitle("MessageBox demo") 
+      msg.setDetailedText("The humidity is : " + str(humidity) +" "+"% at "+now.strftime("%H:%M:%S"))
+      msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    else:
+      now = datetime.datetime.now()
+      print (now.strftime("%H:%M:%S"))
+      msg = QMessageBox()
+      msg.setIcon(QMessageBox.Information)
+
+      msg.setText("The sensor is disconnected")
+      msg.setInformativeText("Click on show details to see avg humidity")
+      msg.setWindowTitle("MessageBox demo") 
+      msg.setDetailedText("The humidity is : " + str(humidity_avg) +" "+"% at "+now.strftime("%H:%M:%S"))
+      msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 
 	
     retval = msg.exec_()
