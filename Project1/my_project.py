@@ -9,10 +9,13 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
 import Adafruit_DHT
-
-
+temperature_old=0;
+humidity_old=0;
  
 class App(QWidget):
+
+  
+  
  
   def __init__(self):
     super().__init__()
@@ -30,12 +33,12 @@ class App(QWidget):
     button = QPushButton('Request Current Temperature  ', self)
     button.setToolTip('This is an example button')
     button.move(40,30) 
-    button.clicked.connect(self.graph0)
+    button.clicked.connect(self.showtemp)
 
     button = QPushButton('Request Current Humidity        ', self)
     button.setToolTip('This is an example button')
     button.move(40,60) 
-    button.clicked.connect(self.graph0)
+    button.clicked.connect(self.showhumidity)
   
     button = QPushButton('Temperature stats', self)
     button.setToolTip('This is an example button')
@@ -51,9 +54,10 @@ class App(QWidget):
   def displayValue(self):
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
     if humidity is not None and temperature is not None:
-        self.label_3.setText(str(temperature) + "C")
-        self.label_4.setText(str(humidity) + "%" ) 
-
+#        self.label_3.setText(str(temperature) + "C")
+#        self.label_4.setText(str(humidity) + "%" ) 
+        print("temperature is :"+ str(temperature)+ "C")
+        print("humidity is :"+ str(humidity)+ "%")
 
 
   def graph0(self):
@@ -74,8 +78,38 @@ class App(QWidget):
 
     plt.title('Humidity values at given time intervals')
     plt.show()
+    
+    
+  def showtemp(self):
+    humidity, temperature = Adafruit_DHT.read_retry(22,4)
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
 
-        
+    msg.setText("You have selected the option to see temperature.The device is properly connected")
+    msg.setInformativeText("This is additional information")
+    msg.setWindowTitle("MessageBox demo")
+    msg.setDetailedText("The temperature is : " + str(temperature) +" "+"C")
+    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+	
+    retval = msg.exec_()
+    print ("value of pressed message box button:" + str(retval))
+
+  def showhumidity(self):
+    humidity, temperature = Adafruit_DHT.read_retry(22,4)
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+
+    msg.setText("You have selected the option to see humidity.The device is properly connected")
+    msg.setInformativeText("This is additional information")
+    msg.setWindowTitle("MessageBox demo")
+    msg.setDetailedText("The humidity is : " + str(humidity) +" "+"%")
+    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+	
+    retval = msg.exec_()
+    print ("value of pressed message box button:" + str(retval))
+
   
  
   @pyqtSlot()
