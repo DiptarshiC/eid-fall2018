@@ -8,6 +8,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import datetime
+import pylab as pl
+from matplotlib.ticker import StrMethodFormatter
 
 
 import Adafruit_DHT
@@ -19,7 +21,12 @@ temperature_avg=0
 humidity_avg=0
 temperature_tot=0
 humidity_tot=0
- 
+temp_ts={}
+
+hum_ts={}
+temp_list=[]
+hum_list=[]
+
 class App(QWidget):
 
   
@@ -69,24 +76,30 @@ class App(QWidget):
 
 
   def temp_graph(self):
-    temp_ts = [590,540,740,130,810,300,320,230,470,620,770,250]
-    temp = [32,36,39,52,61,72,77,75,68,57,48,48]
-
-    plt.scatter(temp_ts,temp)
-
+    #temp_ts = [590,540,740,130,810,300,320,230,470,620,770,250]
+    #temp = [32,36,39,52,61,72,77,75,68,57,48,48]
+    time0 = list(temp_ts.keys())
+    values0 = list(temp_ts.values())
+    plt.xticks(temp_list, time0)
+    plt.plot(temp_list,values0)
+    #self.set_xticklabels([ time0(x) for x in time0])
     plt.title('Temperature values at given time intervals')
+    
     plt.show()
 
 
   def humidity_graph(self):
-    hum_ts = [590,540,740,130,810,300,320,230,470,620,770,250]
-    hum = [32,36,39,52,61,72,77,75,68,57,48,48]
-
-    plt.scatter(hum_ts,hum)
-
+    #hum_ts = [590,540,740,130,810,300,320,230,470,620,770,250]
+    #hum = [32,36,39,52,61,72,77,75,68,57,48,48]
+    time1 = list(hum_ts.keys())
+    values1 = list(hum_ts.values())
+    
+    plt.xticks(hum_list, time1)
+    plt.plot(hum_list,values1)
+    #self.set_xticklabels([ time1(x) for x in time1])
     plt.title('Humidity values at given time intervals')
     plt.show()
-    
+ 
     
   def showtemp(self):
     global temperature_old
@@ -99,9 +112,13 @@ class App(QWidget):
     if humidity is not None and temperature is not None:
       now = datetime.datetime.now()
       count_temp=count_temp+1
+      temp_list.append(count_temp)
       temperature_tot=temperature_tot+temperature
       temperature_avg=(temperature_tot)/(count_temp)
       print (now.strftime("%H:%M:%S"))
+      #temp_ts.append(now.strftime("%H:%M:%S"))
+      #temp.append(temperature)
+      temp_ts[now.strftime("%H:%M:%S")] = temperature
       msg = QMessageBox()
       msg.setIcon(QMessageBox.Information)
 
@@ -135,10 +152,14 @@ class App(QWidget):
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
     if humidity is not None and temperature is not None:
       count_humidity=count_humidity+1
+      hum_list.append(count_humidity)
       humidity_tot=humidity_tot+humidity
       humidity_avg=(humidity_tot)/(count_humidity)
       now = datetime.datetime.now()
       print (now.strftime("%H:%M:%S"))
+      #hum_ts.append(now.strftime("%H:%M:%S"))
+      #hum.append(humidity)
+      hum_ts[now.strftime("%H:%M:%S")] = humidity
       msg = QMessageBox()
       msg.setIcon(QMessageBox.Information)
 
