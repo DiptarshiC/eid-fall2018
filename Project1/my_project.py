@@ -51,12 +51,12 @@ class App(QWidget):
     button = QPushButton('Temperature stats', self)
     button.setToolTip('This is an example button')
     button.move(40,90) 
-    button.clicked.connect(self.graph0)
+    button.clicked.connect(self.temp_graph)
         
     button1 = QPushButton('Humidity stats', self)
     button1.setToolTip('This is an example button')
     button1.move(40,120) 
-    button1.clicked.connect(self.graph1)
+    button1.clicked.connect(self.humidity_graph)
     self.show()
 
   def displayValue(self):
@@ -68,21 +68,21 @@ class App(QWidget):
         print("humidity is :"+ str(humidity)+ "%")
 
 
-  def graph0(self):
-    X = [590,540,740,130,810,300,320,230,470,620,770,250]
-    Y = [32,36,39,52,61,72,77,75,68,57,48,48]
+  def temp_graph(self):
+    temp_ts = [590,540,740,130,810,300,320,230,470,620,770,250]
+    temp = [32,36,39,52,61,72,77,75,68,57,48,48]
 
-    plt.scatter(X,Y)
+    plt.scatter(temp_ts,temp)
 
     plt.title('Temperature values at given time intervals')
     plt.show()
 
 
-  def graph1(self):
-    X = [590,540,740,130,810,300,320,230,470,620,770,250]
-    Y = [32,36,39,52,61,72,77,75,68,57,48,48]
+  def humidity_graph(self):
+    hum_ts = [590,540,740,130,810,300,320,230,470,620,770,250]
+    hum = [32,36,39,52,61,72,77,75,68,57,48,48]
 
-    plt.scatter(X,Y)
+    plt.scatter(hum_ts,hum)
 
     plt.title('Humidity values at given time intervals')
     plt.show()
@@ -93,7 +93,8 @@ class App(QWidget):
     global count_temp
     global temperature_avg
     global temperature_tot
-    
+    global temp_ts
+    global temp
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
     if humidity is not None and temperature is not None:
       now = datetime.datetime.now()
@@ -105,7 +106,7 @@ class App(QWidget):
       msg.setIcon(QMessageBox.Information)
 
       msg.setText("You have selected the option to see temperature.The sensor is properly connected")
-      msg.setInformativeText("This is additional information")
+      msg.setInformativeText("To see the temperature click on show details")
       msg.setWindowTitle("MessageBox demo")
       msg.setDetailedText("The temperature is : " + str(temperature) +" "+"C at "+now.strftime("%H:%M:%S"))
       msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
@@ -129,6 +130,8 @@ class App(QWidget):
     global humidity_tot
     global humidity_avg
     global count_humidity
+    global hum_ts
+    global hum
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
     if humidity is not None and temperature is not None:
       count_humidity=count_humidity+1
@@ -140,7 +143,7 @@ class App(QWidget):
       msg.setIcon(QMessageBox.Information)
 
       msg.setText("You have selected the option to see humidity.The sensor is properly connected")
-      msg.setInformativeText("This is additional information")
+      msg.setInformativeText("To see the humidity click on show details")
       msg.setWindowTitle("MessageBox demo") 
       msg.setDetailedText("The humidity is : " + str(humidity) +" "+"% at "+now.strftime("%H:%M:%S"))
       msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
