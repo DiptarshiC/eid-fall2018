@@ -1,3 +1,14 @@
+##
+#@Filenmame:myproject.py
+#
+#@description:A python code using QT5 libraries to make an interface
+#	for reading the DHT22 temperature and humidity sensor	
+#
+#@author:Diptarshi Chakraborty. Sources from which I have consulted
+#	www.pythonspot.com
+#
+#@Date:30th September 2018
+
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
 from PyQt5.QtGui import QIcon
@@ -10,6 +21,11 @@ import matplotlib.pyplot as plt
 import datetime
 import pylab as pl
 from matplotlib.ticker import StrMethodFormatter
+
+
+
+
+
 
 
 import Adafruit_DHT
@@ -28,6 +44,7 @@ temp_list=[]
 hum_list=[]
 
 class App(QWidget):
+
 
   
   
@@ -66,13 +83,7 @@ class App(QWidget):
     button1.clicked.connect(self.humidity_graph)
     self.show()
 
-  def displayValue(self):
-    humidity, temperature = Adafruit_DHT.read_retry(22,4)
-    if humidity is not None and temperature is not None:
-#        self.label_3.setText(str(temperature) + "C")
-#        self.label_4.setText(str(humidity) + "%" ) 
-        print("temperature is :"+ str(temperature)+ "C")
-        print("humidity is :"+ str(humidity)+ "%")
+  
 
 
   def temp_graph(self):
@@ -186,24 +197,7 @@ class App(QWidget):
 
   
  
-  @pyqtSlot()
-  def on_click(self):
-    print('PyQt5 button click')
-  def Taali_maaro(self):
-    print('De taali') 
-  def plot(self):
-    ax = plt.subplot(111)
-
-    t = np.arange(0.0, 5.0, 0.01)
-    s = np.cos(2*np.pi*t)
-    line, = plt.plot(t, s, lw=2)
-
-    plt.annotate('local max', xy=(2, 1), xytext=(3, 1.5),
-            arrowprops=dict(facecolor='black', shrink=0.05),
-            )
-
-    plt.ylim(-2,2)
-    plt.show() 
+  
    
 if __name__ == '__main__':
     app = QApplication(sys.argv)
