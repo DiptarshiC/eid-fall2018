@@ -7,3 +7,13 @@ I am also creating an interface for the same using QT.
 
 
 For this project I have used the ADAFRUIT DHT22 library
+I have referred to the tutorials of pythonspot.com
+
+Steps used to install matplotlib library
+
+sudo apt-get install matplotlib
+
+Extra Credits:
+
+1.Displaying the average temperature and humidity values
+2.Plotting a graph with the timestamps

@@ -45,8 +45,16 @@ hum_list=[]
 
 class App(QWidget):
 
-
-  
+##
+#@Function:__init__(self)
+#
+#@description:A function to initialize the interface
+#		and to set its size
+#
+#@parameters:self
+#	
+#@return:none
+#  
   
  
   def __init__(self):
@@ -57,6 +65,18 @@ class App(QWidget):
     self.width = 500
     self.height = 300
     self.initUI()
+##
+#@Function:__init__(self)
+#
+#@description:A function to put buttons and GUI
+#		elements in the given interface
+#		that connects to the other functions
+#
+#@parameters:self
+#	
+#@return:none
+#  
+
  
   def initUI(self):
     self.setWindowTitle(self.title)
@@ -83,6 +103,16 @@ class App(QWidget):
     button1.clicked.connect(self.humidity_graph)
     self.show()
 
+##
+#@Function:temp_graph(self)
+#
+#@description:A function to create and display the temperature
+#		graph
+#
+#@parameters:self
+#	
+#@return:none
+#  
   
 
 
@@ -94,9 +124,21 @@ class App(QWidget):
     plt.xticks(temp_list, time0)
     plt.plot(temp_list,values0)
     #self.set_xticklabels([ time0(x) for x in time0])
-    plt.title('Temperature values at given time intervals')
+    plt.title('Temperature values at given timestamps')
     
     plt.show()
+
+##
+#@Function:humidity_graph(self)
+#
+#@description:A function to create and display the humidity
+#		graph
+#
+#@parameters:self
+#	
+#@return:none
+#  
+
 
 
   def humidity_graph(self):
@@ -108,9 +150,19 @@ class App(QWidget):
     plt.xticks(hum_list, time1)
     plt.plot(hum_list,values1)
     #self.set_xticklabels([ time1(x) for x in time1])
-    plt.title('Humidity values at given time intervals')
+    plt.title('Humidity values at given time stamps')
     plt.show()
- 
+##
+#@Function:showtemp
+#
+#@description:A function to a window to display temperature
+#		
+#
+#@parameters:self
+#	
+#@return:temperature
+#  
+
     
   def showtemp(self):
     global temperature_old
@@ -120,6 +172,7 @@ class App(QWidget):
     global temp_ts
     global temp
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
+    #temperature=round(temperature,2)
     if humidity is not None and temperature is not None:
       now = datetime.datetime.now()
       count_temp=count_temp+1
@@ -153,6 +206,16 @@ class App(QWidget):
 	
     retval = msg.exec_()
     print ("value of pressed message box button:" + str(retval))
+##
+#@Function:humidity_graph
+#
+#@description:A function to a window to display humidity
+#		
+#
+#@parameters:self
+#	
+#@return:humidity
+#  
 
   def showhumidity(self):
     global humidity_tot
@@ -161,6 +224,7 @@ class App(QWidget):
     global hum_ts
     global hum
     humidity, temperature = Adafruit_DHT.read_retry(22,4)
+    #humidity=round(humidity,2)
     if humidity is not None and temperature is not None:
       count_humidity=count_humidity+1
       hum_list.append(count_humidity)
