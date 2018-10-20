@@ -8,6 +8,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from PyQt5.QtCore import QTimer
+
+    
+count=0
+
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -74,9 +79,17 @@ class Ui_Dialog(object):
         self.PushButton = QtWidgets.QPushButton(Dialog)
         self.PushButton.setGeometry(QtCore.QRect(0, 260, 101, 31))
         self.PushButton.setObjectName("PushButton")
+        #self.PushButton.clicked.connect(self.Update_data)
         self.pushButton = QtWidgets.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(110, 260, 101, 31))
         self.pushButton.setObjectName("pushButton")
+        #self.pushButton.clicked.connect(self.Update_data)
+        #self.timer = QTimer(self)  
+        #self.timer.setInterval(1000)
+        #self.timer.timeout.connect(self.Update_data)
+        self.timer = QtCore.QTimer()
+        self.timer.start(1000)
+        self.timer.timeout.connect(self.Update_data)
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
@@ -98,7 +111,18 @@ class Ui_Dialog(object):
         self.label_10.setText(_translate("Dialog", "Humidity"))
         self.PushButton.setText(_translate("Dialog", "Celcius"))
         self.pushButton.setText(_translate("Dialog", "Farenheit"))
-
+    
+    def Update_data(self):
+        global count
+        count=count+1
+        self.lcdNumber.display(count)
+        self.lcdNumber_2.display(count)
+        self.lcdNumber_3.display(count)
+        self.lcdNumber_4.display(count)
+        self.lcdNumber_5.display(count)
+        self.lcdNumber_6.display(count)
+        self.lcdNumber_7.display(count)
+        self.lcdNumber_8.display(count)
 
 if __name__ == "__main__":
     import sys
@@ -107,5 +131,6 @@ if __name__ == "__main__":
     ui = Ui_Dialog()
     ui.setupUi(Dialog)
     Dialog.show()
+    global count
     sys.exit(app.exec_())
 
