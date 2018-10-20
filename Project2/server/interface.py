@@ -10,8 +10,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from PyQt5.QtCore import QTimer
 
-    
-count=0
+import Adafruit_DHT
+
+count=0   
+temp=1
+hum=2
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -88,7 +91,7 @@ class Ui_Dialog(object):
         #self.timer.setInterval(1000)
         #self.timer.timeout.connect(self.Update_data)
         self.timer = QtCore.QTimer()
-        self.timer.start(1000)
+        self.timer.start(5000)
         self.timer.timeout.connect(self.Update_data)
 
         self.retranslateUi(Dialog)
@@ -114,15 +117,18 @@ class Ui_Dialog(object):
     
     def Update_data(self):
         global count
+        global temp
+        global hum
         count=count+1
-        self.lcdNumber.display(count)
-        self.lcdNumber_2.display(count)
-        self.lcdNumber_3.display(count)
-        self.lcdNumber_4.display(count)
-        self.lcdNumber_5.display(count)
-        self.lcdNumber_6.display(count)
-        self.lcdNumber_7.display(count)
-        self.lcdNumber_8.display(count)
+        temp, hum = Adafruit_DHT.read_retry(22,4)
+        self.lcdNumber.display(temp)
+        self.lcdNumber_2.display(hum)
+        self.lcdNumber_3.display(temp)
+        self.lcdNumber_4.display(hum)
+        self.lcdNumber_5.display(temp)
+        self.lcdNumber_6.display(hum)
+        self.lcdNumber_7.display(temp)
+        self.lcdNumber_8.display(hum)
 
 if __name__ == "__main__":
     import sys
