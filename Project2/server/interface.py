@@ -29,6 +29,8 @@ hum_high=0
 temp_low=18
 hum_low=19
 flag=0
+date=""
+time=""
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
@@ -187,8 +189,13 @@ class Ui_Dialog(object):
         global hum_high
         global temp_low
         global hum_low
-        temp, hum = Adafruit_DHT.read_retry(22,4)
+        global date
+        global time
         now = datetime.datetime.now()
+        date = now.strftime("%m-%d")
+        time = now.strftime("%H:%M")
+        temp, hum = Adafruit_DHT.read_retry(22,4)
+        
         temp_avg  = ((count*temp_avg)+temp)/(count+1)
         hum_avg   = ((count*hum_avg)+hum)/(count+1)
         if temp>temp_high:
@@ -220,8 +227,8 @@ class Ui_Dialog(object):
         elif flag==0:
             self.lcdNumber_7.display(temp_low)
         self.lcdNumber_8.display(hum_low)
-        self.lcdNumber_9.display(now.strftime("%H:%M"))
-        self.lcdNumber_10.display(now.strftime("%m-%d"))
+        self.lcdNumber_9.display(time)
+        self.lcdNumber_10.display(date)
         
     def calc_farenheit(self):
         global flag
