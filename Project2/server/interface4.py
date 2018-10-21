@@ -108,18 +108,6 @@ def humf_low(self):
 
         Writer.writerow([str(hum_low)])                   
 
-def datef(self):
-    with open('date.csv', mode='w') as Datef:
-        Writer = csv.writer(Datef, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        Writer.writerow([date])
-        
-def timef(self):
-    with open('time.csv', mode='w') as Timef:
-        Writer = csv.writer(Timef, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        Writer.writerow([time]) 
-
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -260,9 +248,7 @@ class Ui_Dialog(object):
         global time
         now = datetime.datetime.now()
         date = now.strftime("%Y-%m-%d")
-        datef(self)
         time = now.strftime("%H:%M:%S")
-        timef(self)
         temp, hum = Adafruit_DHT.read_retry(22,4)
         #with open('data_file.csv', mode='w') as employee_file:
             #employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
