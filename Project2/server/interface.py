@@ -192,8 +192,8 @@ class Ui_Dialog(object):
         global date
         global time
         now = datetime.datetime.now()
-        date = now.strftime("%m-%d")
-        time = now.strftime("%H:%M")
+        date = now.strftime("%Y-%m-%d")
+        time = now.strftime("%H:%M:%S")
         temp, hum = Adafruit_DHT.read_retry(22,4)
         
         temp_avg  = ((count*temp_avg)+temp)/(count+1)
@@ -227,8 +227,8 @@ class Ui_Dialog(object):
         elif flag==0:
             self.lcdNumber_7.display(temp_low)
         self.lcdNumber_8.display(hum_low)
-        self.lcdNumber_9.display(time)
-        self.lcdNumber_10.display(date)
+        self.lcdNumber_9.display(now.strftime("%H:%M"))
+        self.lcdNumber_10.display(now.strftime("%m-%d"))
         
     def calc_farenheit(self):
         global flag
