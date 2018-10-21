@@ -12,9 +12,44 @@ from PyQt5.QtCore import QTimer
 
 import Adafruit_DHT
 
+import tornado.httpserver
+import tornado.websocket
+import tornado.ioloop
+import tornado.web
+import socket
+
 count=0   
-temp=1
-hum=2
+temp=0
+hum=0
+temp_avg=0
+hum_avg=0
+temp_high=0
+hum_high=0
+temp_low=18
+hum_low=19
+flag=0
+
+class WSHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        print ('new connection')
+      
+    def on_message(self, message):
+        print ('message received:  %s' % message)
+        # Reverse Message and send it back
+        print ('sending back message: %s' % message[::-1])
+        self.write_message(message[::-1])
+ 
+    def on_close(self):
+        print ('connection closed')
+ 
+    def check_origin(self, origin):
+        return True
+ 
+application = tornado.web.Application([(r'/ws', WSHandler),])
+
+
+
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -79,17 +114,17 @@ class Ui_Dialog(object):
         self.label_10 = QtWidgets.QLabel(Dialog)
         self.label_10.setGeometry(QtCore.QRect(260, 10, 67, 21))
         self.label_10.setObjectName("label_10")
+        
         self.PushButton = QtWidgets.QPushButton(Dialog)
         self.PushButton.setGeometry(QtCore.QRect(0, 260, 101, 31))
         self.PushButton.setObjectName("PushButton")
-        #self.PushButton.clicked.connect(self.Update_data)
+        self.PushButton.clicked.connect(self.calc_farenheit)
+        
         self.pushButton = QtWidgets.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(110, 260, 101, 31))
         self.pushButton.setObjectName("pushButton")
-        #self.pushButton.clicked.connect(self.Update_data)
-        #self.timer = QTimer(self)  
-        #self.timer.setInterval(1000)
-        #self.timer.timeout.connect(self.Update_data)
+        self.pushButton.clicked.connect(self.calc_celcius)
+        
         self.timer = QtCore.QTimer()
         self.timer.start(5000)
         self.timer.timeout.connect(self.Update_data)
@@ -98,6 +133,9 @@ class Ui_Dialog(object):
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+        
+
+
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -112,23 +150,63 @@ class Ui_Dialog(object):
         self.label_8.setText(_translate("Dialog", "Lowest"))
         self.label_9.setText(_translate("Dialog", "Temperature"))
         self.label_10.setText(_translate("Dialog", "Humidity"))
-        self.PushButton.setText(_translate("Dialog", "Celcius"))
-        self.pushButton.setText(_translate("Dialog", "Farenheit"))
+        self.PushButton.setText(_translate("Dialog", "Farenheit"))
+        self.pushButton.setText(_translate("Dialog", "Celcius"))
+    
+    
+    
     
     def Update_data(self):
         global count
         global temp
         global hum
-        count=count+1
+        global temp_avg
+        global hum_avg
+        global temp_high
+        global hum_high
+        global temp_low
+        global hum_low
+        
         temp, hum = Adafruit_DHT.read_retry(22,4)
-        self.lcdNumber.display(temp)
+        temp_avg  = ((count*temp_avg)+temp)/(count+1)
+        hum_avg   = ((count*hum_avg)+hum)/(count+1)
+        if temp>temp_high:
+            temp_high=temp
+        if hum>hum_high:
+            hum_high=hum
+        if temp<temp_low:
+            temp_low=temp
+        if hum<hum_low:
+            hum_low=hum   
+        count=count+1
+        if flag==1: 
+            self.lcdNumber.display((9/5*temp+32))
+        elif flag==0:
+            self.lcdNumber.display(temp)
         self.lcdNumber_2.display(hum)
-        self.lcdNumber_3.display(temp)
-        self.lcdNumber_4.display(hum)
-        self.lcdNumber_5.display(temp)
-        self.lcdNumber_6.display(hum)
-        self.lcdNumber_7.display(temp)
-        self.lcdNumber_8.display(hum)
+        if flag==1: 
+            self.lcdNumber_3.display((9/5*temp_avg+32))
+        elif flag==0:
+            self.lcdNumber_3.display(temp_avg)
+        self.lcdNumber_4.display(hum_avg)
+        if flag==1: 
+            self.lcdNumber_5.display((9/5*temp_high+32))
+        elif flag==0:
+            self.lcdNumber_5.display(temp_high)
+        self.lcdNumber_6.display(hum_high)
+        if flag==1: 
+            self.lcdNumber_7.display((9/5*temp_low+32))
+        elif flag==0:
+            self.lcdNumber_7.display(temp_low)
+        self.lcdNumber_8.display(hum_low)
+        
+    def calc_farenheit(self):
+        global flag
+        flag=1   
+    
+    def calc_celcius(self):
+        global flag
+        flag=0
 
 if __name__ == "__main__":
     import sys
