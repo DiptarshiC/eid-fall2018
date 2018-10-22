@@ -10,6 +10,8 @@
 #@Date:30th September 2018
 
 import sys
+from ui import Ui_MainWindow
+
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
