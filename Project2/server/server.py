@@ -23,6 +23,14 @@ date=""
 time=""
 
 
+def hulla(self):
+    global temp_high        
+    with open('temp_high.csv', mode='r') as Temp_high:
+        reader = csv.reader(Temp_high)
+        for row in reader:
+            temp_high = float(row[0])
+            print(temp_high)
+
  
 def tempf(self):
     global temp        
@@ -56,13 +64,7 @@ def humf_avg(self):
             hum_avg = float(row[0])
             print(hum_avg)    
         
-def tempf_high(self):
-    global temp_high        
-    with open('temp_high.csv', mode='r') as Temp_high:
-        reader = csv.reader(Temp_high)
-        for row in reader:
-            temp_avg = float(row[0])
-            print(temp_high)
+
         
 def tempf_low(self):
     global temp_low        
@@ -113,9 +115,47 @@ class WSHandler(tornado.websocket.WebSocketHandler):
       
     def on_message(self, message):
         print ('message received:  %s' % message)
-        # Reverse Message and send it back
-        print ('sending back message: %s' % message[::-1])
-        self.write_message(message[::-1])
+        if message=="CurrentTemp":
+            tempf(self)
+            datef(self)
+            timef(self)
+            self.write_message("1 "+str(temp)+ " " + str(date)+" "+str(time))
+        if message=="CurrentHum":
+            humf(self)
+            datef(self)
+            timef(self)
+            self.write_message("2 "+str(hum)+ " " + str(date)+" "+str(time))    	
+        if message=="Tempavg":
+            tempf_avg(self)
+            datef(self)
+            timef(self)
+            self.write_message("3 "+str(temp_avg)+ " " + str(date)+" "+str(time))  	
+        if message=="Humavg":
+            humf_avg(self)
+            datef(self)
+            timef(self)
+            self.write_message("4 "+str(hum_avg)+ " " + str(date)+" "+str(time)) 
+        if message=="Temphigh":
+            hulla(self)
+            datef(self)
+            timef(self)
+            self.write_message("5 "+str(temp_high)+ " " + str(date)+" "+str(time))
+        if message=="Humhigh":
+            humf_high(self)
+            datef(self)
+            timef(self)
+            self.write_message("6 "+str(hum_high)+ " " + str(date)+" "+str(time))
+        if message=="Templow":
+            tempf_low(self)
+            datef(self)
+            timef(self)
+            self.write_message("7 "+str(temp_low)+ " " + str(date)+" "+str(time))
+        if message=="Humlow":
+            humf_low(self)
+            datef(self)
+            timef(self)
+            self.write_message("8 "+str(hum_low)+ " " + str(date)+" "+str(time))                     
+            
  
     def on_close(self):
         print ('connection closed')

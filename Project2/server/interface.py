@@ -214,7 +214,7 @@ class Ui_Dialog(object):
         self.pushButton.clicked.connect(self.calc_celcius)
         
         self.timer = QtCore.QTimer()
-        self.timer.start(1000)
+        self.timer.start(5000)
         self.timer.timeout.connect(self.Update_data)
 
         self.retranslateUi(Dialog)
