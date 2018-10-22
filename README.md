@@ -1,2 +1,3 @@
-# eid-fall2018
+﻿# eid-fall2018
 Repo for Fall 2018 Embedded Interface Design class Name: Diptarshi Chakraborty
+This repo contains Homeworks and Projects
