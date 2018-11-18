@@ -3,6 +3,7 @@
 # Form implementation generated from reading ui file 'CLIENT.ui'
 #
 # Created by: PyQt5 UI code generator 5.7
+#Created by Diptarshi
 #
 # WARNING! All changes made in this file will be lost!
 import datetime
@@ -24,7 +25,13 @@ average_hum=0
 avg_click=0
 starttime=""
 endtime=""  
-
+##
+    #The the class UI_Dialog sets up the UI
+    #for the given client
+    # 
+    #
+    #
+    #
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -112,7 +119,13 @@ class Ui_Dialog(object):
         self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
     
-    
+    ##
+    #The function myfunction makes sure that
+    #the client reads from the sqs server, stores data in an 
+    # array and then avarages out the values to display it on 
+    #a graph.
+    #
+    #
     def myfunction(self):
         global temp
         global hum
