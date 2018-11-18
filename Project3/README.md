@@ -1,4 +1,4 @@
-#Project3 
+# Project3 
 
 This project has been done by Diptarshi Chakraborty and Nagarjuna.
 
@@ -13,3 +13,5 @@ I looked at AWS educate for references.
 1.https://docs.aws.amazon.com/lambda/latest/dg/with-sqs-example.html
 
 2. https://docs.aws.amazon.com/lambda/latest/dg/get-started-create-function.html 
+
+We used the amazon educate package which gave us freee tools. Thank you amazon!!! :)
