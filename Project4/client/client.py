@@ -130,18 +130,70 @@ class Ui_Dialog(object):
         self.label_9.setText(_translate("Dialog", "30"))
         self.label_10.setText(_translate("Dialog", "NO. OF VALUES"))
         self.pushButton_2.setText(_translate("Dialog", "Test"))
-        self.pushButton_2.clicked.connect(self.generate_graph)
-    
-    def COAP(self):
-    
+        self.pushButton_2.clicked.connect(self.generate_graph) 
     
     def AMQP(self):
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        channel = connection.channel()
+
+
+        channel.queue_declare(queue='hello')
+
+        def callback(ch, method, properties, body):
+           print(" [x] Received %r" % body)
+
+        channel.basic_consume(callback, queue='hello', no_ack=True)
+
+        print(' [*] Waiting for messages. To exit press CTRL+C')
+        channel.start_consuming()
     
+    def COAP_get(self):
+        logging.basicConfig(level=logging.INFO)
+        async def main():
+           protocol = await Context.create_client_context()
+        
+           request = Message(code=GET, uri='coap://localhost/time')
+        
+        
+        
+           response = await protocol.request(request).response
+           print('Result: %s\n%r'%(response.code, response.payload))
+    
+    
+    def COAP_put(self):
+        logging.basicConfig(level=logging.INFO)
+        async def main():
+           context = await Context.create_client_context()
+           await asyncio.sleep(2)
+           payload = b"The quick brown fox jumps over the lazy dog.\n" * 30
+           request = Message(code=PUT, payload=payload, uri="coap://localhost/other/block")
+           response = await context.request(request).response
+           print('Result: %s\n%r'%(response.code, response.payload))
+    
+    # The callback for when the client receives a CONNACK response from the server.
     def MQTT(self):
     
-    def WEBSOCKET(self):
+        MQTT_SERVER = "localhost"
+        MQTT_PATH = "test_channel"
         
-    
+        def on_connect(client, userdata, flags, rc):
+           print("Connected with result code "+str(rc))
+           # Subscribing in on_connect() means that if we lose the connection and
+           # reconnect then subscriptions will be renewed.
+           client.subscribe(MQTT_PATH)
+            
+            # The callback for when a PUBLISH message is received from the server.
+        def on_message(client, userdata, msg):
+           print(msg.topic+" "+str(msg.payload))
+        client = mqtt.Client()
+        client.on_connect = on_connect
+        client.on_message = on_message     
+        client.connect(MQTT_SERVER, 1883, 60)
+        # Blocking call that processes network traffic, dispatches callbacks and
+        # handles reconnecting.
+        # Other loop*() functions are available that give a threaded interface and a
+        # manual interface.
+        client.loop_forever()
     
     
     def generate_graph(self):
@@ -155,6 +207,25 @@ class Ui_Dialog(object):
         plt.xticks(index, protocol, fontsize=5, rotation=0)
         plt.title('Time for different protocols in seconds')
         plt.show()
+        
+    def websocket(self):
+        @asyncio.coroutine
+        def hello():
+           websocket = yield from websockets.connect('ws://localhost:8765/')
+
+        try:
+           name = input("What's your name? ")
+
+           yield from websocket.send(name)
+           print("> {}".format(name))
+
+           greeting = yield from websocket.recv()
+           print("< {}".format(greeting))
+
+        finally:
+           yield from websocket.close()
+
+        asyncio.get_event_loop().run_until_complete(hello())
 
 
 if __name__ == "__main__":
