@@ -6,6 +6,11 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+
+import threading
+import sys
+import time
+import ast
 import logging
 import asyncio
 
@@ -15,6 +20,8 @@ import paho.mqtt.client as mqtt
 
 import asyncio
 import websockets
+
+from websocket import create_connection
 
 
 import pika
@@ -130,7 +137,115 @@ class Ui_Dialog(object):
         self.label_9.setText(_translate("Dialog", "30"))
         self.label_10.setText(_translate("Dialog", "NO. OF VALUES"))
         self.pushButton_2.setText(_translate("Dialog", "Test"))
-        self.pushButton_2.clicked.connect(self.generate_graph) 
+        self.pushButton_2.clicked.connect(self.test_protocols) 
+    
+    def test_protocols(self):
+        """
+        Test all three protocols
+        """
+        global message_list,mqtt_end_time
+        websockets_rtt = []
+        mqtt_start_time=[]
+        mqtt_rtt = []
+        coap_rtt = []
+        mqtt_end_time = []
+    
+        ip = "128.138.189.119"
+    
+        #WEBSOCKETS
+    
+        ws = create_connection("ws://" + ip + ":8888/ws")
+        for i in range(0,len(message_list)):
+           web_t1 = time.time() #start time for message transmission
+           ws.send(str(message_list[i])) #send message
+           result =  ws.recv() #received message from server
+           web_t2 = time.time() #end time for message reception
+           websockets_rtt.append(web_t2 - web_t1) #compute round trip time
+           print("\nWebSocket Data:\n")
+           print(result)
+           print('WebSocket round trip time in seconds: %s'% websockets_rtt[i])
+        
+        #MQTT
+        up_topic = 'mqtt_upstream'
+        down_topic = 'mqtt_downstream'
+
+        threads = []
+        msg_event = threading.Event()
+        mqtt_thread = threading.Thread(target=mqtt_server) #client operates as mqtt server
+        threads.append(mqtt_thread)
+        mqtt_thread.daemon = True
+        mqtt_thread.start()
+        time.sleep(1) #required for MQTT to operate
+        
+        #Send and receive individual messages and time each transfer
+        
+        for i in range(0,len(message_list)):
+           print(i)
+           mqtt_start_time.append(time.time())
+           client.publish(up_topic, str(message_list[i]))
+           client.subscribe(down_topic)
+           time.sleep(1)
+
+        print(len(mqtt_end_time))
+        print(len(mqtt_start_time))
+     
+     
+     
+        # Compute transfer times 
+        for i in range(0,len(mqtt_end_time)):
+           mqtt_rtt.append(float(mqtt_end_time[i])-float(mqtt_start_time[i+(len(mqtt_start_time)-len(mqtt_end_time))]))
+        
+        #COAP
+        for i in range(0,len(message_list)):
+           coap_t1 = time.time()
+           CoAPhandler(i)
+           coap_t2 = time.time()
+           coap_rtt.append(coap_t2 - coap_t1)
+           print('CoAP round trip time in seconds: %s'% coap_rtt[i])
+        
+        print(websockets_rtt)
+        print(mqtt_rtt)
+        print(coap_rtt)
+    
+    
+    
+    
+    def mqtt_server():
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.connect("test.mosquitto.org",1883,60)
+        client.loop_forever()
+    
+    def on_connect(client, userdata, flags, rc): #MQTT on_connect routine
+        print("Connected with result code "+str(rc))
+        
+        
+    def on_message(client, userdata, msg): #MQTT on_message routine
+        global mqtt_end_time
+        print("Client"+str(msg.payload))
+        mqtt_end_time.append(time.time())        
+        
+    def CoAPhandler(i): #handler for COAP transfers
+        global message_list
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(coapPUT(str(message_list[i])))
+        return 0    
+    
+    async def coapPUT(data): #function to transfer data using COAP
+        context = await aiocoap.Context.create_client_context()
+        
+        request = aiocoap.Message(code=PUT, payload=bytes(data, 'utf-8'))
+        
+        request.opt.uri_host = "128.138.189.241"
+        request.opt.uri_path = ("other", "block")
+        response = await context.request(request).response
+        print('Result: %s\n%r'%(response.code, response.payload))
+
+    
+    
+    
     
     def AMQP(self):
         connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
