@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 # WS server example for old Python versions
+#Has problems in python 3.x
+#
+#
 
 import asyncio
 import websockets
