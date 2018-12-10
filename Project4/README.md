@@ -98,6 +98,8 @@ The steps to test individual protocol speeds are as follows :
 
 ## Client
 
+1. go to the folder 'client' 
+
 1. run client.py
 
  
