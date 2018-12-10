@@ -8,9 +8,12 @@
 
 
 #Project made by Diptarshi Chakraborty
-#
+#Various example code from the references given in the link have been used 
+#to write this code
+#First I wrote all the code separately then I integrated.
 #Python file for client.py
-#
+#Boto3 called for reading from the sqs queue.
+#Partially adapted from the third project 
 #The file reads from queue and makes a plot comparing the times
 #for the data transaction to take place
 #
@@ -76,11 +79,12 @@ value_hum=[]
 
 central_list=[]
 
-
-
-
-
-
+#
+#Lists would contain set of 8 values
+#four for humidity
+#four for tempeature.
+#They would be used for tracking round trip time after
+#being appended in a super list
 message_list = []
 
 client = mqtt.Client()
@@ -231,7 +235,7 @@ class Ui_Dialog(object):
     #
     #plots a graph for the various values of data
     #
-    #
+    #global values set as fields
     #
     #
     #
@@ -485,7 +489,7 @@ class Ui_Dialog(object):
     
         ip = "128.138.189.119"
     
-        #WEBSOCKETS
+        #websocket connection
     
         ws = create_connection("ws://" + ip + ":8888/ws")
         for i in range(0,len(message_list)):
@@ -498,7 +502,7 @@ class Ui_Dialog(object):
            print(result)
            print('WebSocket round trip time in seconds: %s'% websockets_rtt[i])
         
-        #MQTT
+        #mqtt connection
         up_topic = 'mqtt_upstream'
         down_topic = 'mqtt_downstream'
 
@@ -528,7 +532,7 @@ class Ui_Dialog(object):
         for i in range(0,len(mqtt_end_time)):
            mqtt_rtt.append(float(mqtt_end_time[i])-float(mqtt_start_time[i+(len(mqtt_start_time)-len(mqtt_end_time))]))
         
-        #COAP
+        #coap connection
         for i in range(0,len(message_list)):
            coap_t1 = time.time()
            CoAPhandler(i)
@@ -560,12 +564,13 @@ def mqtt_server():
     client.on_message = on_message
     client.connect("test.mosquitto.org",1883,60)
     client.loop_forever()
-    
-def on_connect(client, userdata, flags, rc): #MQTT on_connect routine
+
+#This function connects MQTT   
+def on_connect(client, userdata, flags, rc): 
     print("Connected with result code "+str(rc))
         
-        
-def on_message(client, userdata, msg): #MQTT on_message routine
+#This function connects MQTT       
+def on_message(client, userdata, msg): 
     global mqtt_end_time
     print("Client"+str(msg.payload))
     mqtt_end_time.append(time.time())        
@@ -590,7 +595,9 @@ async def coapPUT(data): #function to transfer data using COAP
 
     
     
-    
+    #
+    #Code executing solo AMQP. It works fine separately
+    #
     
     
     def AMQP(self):
@@ -608,6 +615,10 @@ async def coapPUT(data): #function to transfer data using COAP
         print(' [*] Waiting for messages. To exit press CTRL+C')
         channel.start_consuming()
     
+    #
+    #Code executing solo COAP. Working separately. It gets data
+    #
+    
     def COAP_get(self):
         logging.basicConfig(level=logging.INFO)
         async def main():
@@ -620,7 +631,9 @@ async def coapPUT(data): #function to transfer data using COAP
            response = await protocol.request(request).response
            print('Result: %s\n%r'%(response.code, response.payload))
     
-    
+    #
+    #Code executing solo COAP. Working separately. It puts data
+    #
     def COAP_put(self):
         logging.basicConfig(level=logging.INFO)
         async def main():
@@ -656,7 +669,9 @@ async def coapPUT(data): #function to transfer data using COAP
         # manual interface.
         client.loop_forever()
     
-    
+    #
+    #Code executing sample graph
+    #
     def generate_graph(self):
         # this is for plotting purpose
         protocol = ['MQTT','COAP','WEBSOCKET','AMQP']    
