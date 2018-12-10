@@ -40,6 +40,13 @@ There are a number of MQTT brokers available for different machines.
 For this project, we have selected one of the most popular and stable brokers, 
 MQTT-Mosquitto2“Mosquitto”.Note the two “t”’s in Mosquitto.
 
+References for the given section are as shown below :
+
+1.https://www.switchdoc.com/2018/02/tutorial-installing-and-testing-mosquitto-mqtt-on-raspberry-pi/
+
+2.https://randomnerdtutorials.com/how-to-install-mosquitto-broker-on-raspberry-pi/
+
+
 
 
 
