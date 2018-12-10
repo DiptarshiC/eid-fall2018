@@ -229,9 +229,9 @@ class Ui_Dialog(object):
         global starttime
         global endtime
         sqs = boto3.client('sqs', region_name = 'us-west-2',
-                   aws_access_key_id='ASIAXA4WY5JYOKGKKVM6',
-                   aws_secret_access_key='F0KjABYpW4GVZXSOT9ZTjWkCkxdFOdJiE+ZzPaCt',
-                   aws_session_token='FQoGZXIvYXdzEGcaDHRCfhSx4DyhFM9RDyLkAur5lpqKre8C3Bnzaa9h+ZcPq/WqKv2iWQlXikSQZ3tbpZCLF2zAjr7ydoFQ57MFzQlCHHrZP0+cHdc/soTt627whw5rhXyyhxvjfZ1M1cvErnti0NKp8XgiD56InrVQJVGnxqmtiUr6L8XiRqng3PYoschWRThroHKk2Y9TJL+brKkFfVjQ6CKtZFr5LmaTe3kFImj0DZFVmO2fK1zxktJ+mK5yEhLBR/j6WGC+VttxQKy5A0AXVpZDJZQU8BbZGGloOiQDawmF9a2xMVq6DhcXpG6enjIQYvgyQl2tKszm3WAYwo5fVXhdMcD5iEwgH2aGIpjx+h25IQZdiwDvksSEq8II2+9bHCc+kxPeuoXtkFWhsurWNl3o7x+ua1uWG6cabWjxR9SgmYVbhzEzUgRZ1iEITRaEBwhwTN366FoqXABhxKUe/REmc3lykxzKOs/YFQR35Zh6UvS95yvE2Djob7OmKKzcueAF')                          
+                   aws_access_key_id='ASIAXA4WY5JYL35ZC5B7',
+                   aws_secret_access_key='2XJNz9s5Z/UJdqHONOwbtIr9eMJNlvTqkCMuDy64',
+                   aws_session_token='FQoGZXIvYXdzEG0aDB1bvlTIKd+JZe5DFiLkAjMINyqMbjvoxRmszxKzeAhNuQiJfxT1ndOKfjPmOYNP1mmpJL6G6YqDhvbNsVB8BnMkhfnD42ojrSBK2/MhqitbjyfI9R4pO6XfAy6Q4B93UzjfEZl33jftkikmtP9MY+HDUeTLSOMLyKAJ3cJzaXSJFGe9z1KTOa6I3e/I71f8M+IjIXneW3ZMkI0GUykom6D5AlPMfKzQ3Fp5u6AMdiFicps1DOLNJDT2J+EhPduePz54ZkxqagFWF3N5qXSwJV7ifw8KwhuivjUyHN3KSaF7HMF9iXvjtfnqnDCYvPIbrOAFuArGpbw4bpcDZyXn+ZtHIlxqLj5RhaDtX32b3gfVN6ptY4z/GneSKE9cRlZk/nKVIl4pEM5ufxBfkh798yIqAv7yYHvQfS5VLHMDSFhTGqBbkjHLwi0eZxYQ7VzZFhWsdR894AY0y9da9ME/HT2EaOnxz7YgWGP52KFpZo2TVtgZKJ3xuuAF')                          
         url = sqs.get_queue_url(QueueName='RPI-3QUEUE.fifo')
         print(url['QueueUrl'])
         response = sqs.receive_message(QueueUrl =  url['QueueUrl'],AttributeNames= ['SentTimestamp'], MaxNumberOfMessages = 10, MessageAttributeNames=['All'], VisibilityTimeout = 0,WaitTimeSeconds = 5)
@@ -510,8 +510,11 @@ class Ui_Dialog(object):
         print(websockets_rtt)
         print(mqtt_rtt)
         print(coap_rtt)
-        plt.plot([total_time_websockets,  total_time_mqtt, total_time_coap])
-        plt.xlabel('WEBSOCKETS                               MQTT                               COAP')  
+        #plt.plot([total_time_websockets,  total_time_mqtt, total_time_coap])
+        plt.xlabel('WEBSOCKETS                               MQTT                               COAP')
+        plt.plot(websockets_rtt)
+        plt.plot(mqtt_rtt)
+        plt.plot(coap_rtt)  
         plt.show()
     
     
