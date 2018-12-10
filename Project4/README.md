@@ -70,6 +70,23 @@ and between devices on different constrained networks both joined by an internet
 on mobile communication networks.
 
 
+# Method of Protocol test
+
+The steps to test individual protocol speeds are as follows :
+
+1. First receive data from the sqs queue using the boto3 library.
+
+2. Create a separate queue for every dataset. (8 fields)
+
+3. Create a megaqueue using all the queues that you have
+
+4. Create a button related to an 'event' that sends data to the respective servers, receives it 
+   back and then measures the time differences for each data set
+   
+5. Add all the time for a particular protocol. This is the total time.
+
+6. Plot a graph and measure the time difference.    
+
 
 
 
