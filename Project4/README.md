@@ -88,7 +88,19 @@ The steps to test individual protocol speeds are as follows :
 6. Plot a graph and measure the time difference.    
 
 
+# How to build project
 
+## Server
+
+1. run start.sh that will pusblish to the queue
+
+2. run coap_server.py websocket_server.py mqtt_server.py either as separate instances or via a single bash command
+
+## Client
+
+1. run client.py
+
+ 
 
 
 
