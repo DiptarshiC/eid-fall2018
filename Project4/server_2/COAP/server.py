@@ -5,7 +5,11 @@ import asyncio
 
 import aiocoap.resource as resource
 import aiocoap
-
+#
+#This file has been adapted from the example code provided in the references to test communication
+#
+#
+#
 
 class BlockResource(resource.Resource):
     """Example resource which supports the GET and PUT methods. It sends large
