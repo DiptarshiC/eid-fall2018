@@ -7,8 +7,9 @@ For this the first steps are to ensure all three protocols have the proper broke
 given system.After reading messages from the sqs queue on AWS, we ininitiate a test that run that
 encapsulate the entire set of 8 values into a list and send it from the client to the server.The
 server then sends the message back to the client. Below are the steps to install the various brokers
-for the protocols. 
-
+for the protocols.I have cited all the resources from where I have referred for the given project. Also
+I would like to thank all my buddies who have tried to help me debug my code and told me workarounds where
+I got stuck.
 
 # 1. Steps to install websockets on the given system
 
