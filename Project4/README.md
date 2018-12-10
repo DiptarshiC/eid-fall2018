@@ -23,8 +23,25 @@ open connections, making it ideal for long polling, WebSockets, and other applic
 require a long-lived connection to each user
 You shall find a good examples for code in the following links :
 
-https://gist.github.com/joewashear007/8276467
-https://lowpowerlab.com/2013/01/17/raspberrypi-websockets-with-python-tornado/
+1.https://gist.github.com/joewashear007/8276467
+2.https://lowpowerlab.com/2013/01/17/raspberrypi-websockets-with-python-tornado/
+
+# 2. Steps to install mqtt on the given webserver
+
+The broker for mqtt is mosquito. The steps to install it are as follows :
+
+sudo apt-get install mosquitto mosquitto-clients
+
+sudo apt-get install python-pip3	
+
+sudo pip3 install paho-mqtt
+
+There are a number of MQTT brokers available for different machines.   
+For this project, we have selected one of the most popular and stable brokers, 
+MQTT-Mosquitto2“Mosquitto”.Note the two “t”’s in Mosquitto.
+
+
+
 
 
 
