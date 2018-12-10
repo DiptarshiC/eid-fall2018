@@ -1,4 +1,16 @@
+
+
 #Python routine to implement MQTT server using paho
+
+
+#
+#
+#Adapted from example
+#
+#Written by Diptarshi Chakraborty
+#
+
+
 
 import paho.mqtt.client as mqtt
 import threading

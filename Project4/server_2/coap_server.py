@@ -1,4 +1,10 @@
 #Python routine to implement a COAP server using aiocoap
+#
+#
+#Adapted from example
+#
+#Written by Diptarshi Chakraborty
+#
 
 import aiocoap.resource as resource
 import threading

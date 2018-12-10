@@ -80,6 +80,7 @@ central_list=[]
 
 
 
+
 message_list = []
 
 client = mqtt.Client()
@@ -686,6 +687,13 @@ async def coapPUT(data): #function to transfer data using COAP
            yield from websocket.close()
 
         asyncio.get_event_loop().run_until_complete(hello())
+
+#
+#
+#main function that executes application
+#
+#
+#
 
 
 if __name__ == "__main__":
