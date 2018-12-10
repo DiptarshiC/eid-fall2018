@@ -47,9 +47,27 @@ References for the given section are as shown below :
 2.https://randomnerdtutorials.com/how-to-install-mosquitto-broker-on-raspberry-pi/
 
 
+# 3. Steps to install the broker for COAP on the given webserver
+
+The broker for COAP is aicoap. The steps to install the broker for it are given as follows:
+
+pip3 install --upgrade "aiocoap[all]"
+
+This step shall help you install all the relevant support we need for the given library.
+Here are some given references that shall help you navigate through the code and play with it.
+
+1. https://aiocoap.readthedocs.io/en/latest/examples.html
+
+2. https://aiocoap.readthedocs.io/en/latest/api.html
+
+3. https://packages.debian.org/sid/python3-aiocoap
 
 
-
+Constrained Application Protocol (CoAP) is a specialized Internet Application Protocol for constrained devices, as defined in RFC 7252. 
+It enables those constrained devices called "nodes" to communicate with the wider Internet using similar protocols. CoAP is designed for 
+use between devices on the same constrained network (e.g., low-power, lossy networks), between devices and general nodes on the Internet, 
+and between devices on different constrained networks both joined by an internet. CoAP is also being used via other mechanisms, such as SMS 
+on mobile communication networks.
 
 
 
