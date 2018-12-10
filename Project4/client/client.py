@@ -6,6 +6,16 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+
+#Project made by Diptarshi Chakraborty
+#
+#Python file for client.py
+#
+#The file reads from queue and makes a plot comparing the times
+#for the data transaction to take place
+#
+
+
 import boto3
 import threading
 import sys
@@ -75,7 +85,7 @@ message_list = []
 client = mqtt.Client()
 mqtt_end_time=[]
 
-
+#the function for my User interface
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -179,7 +189,8 @@ class Ui_Dialog(object):
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-
+    
+    #the function for translating the UI
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
@@ -205,13 +216,25 @@ class Ui_Dialog(object):
         #message_list.append(50)
         self.pushButton_2.clicked.connect(self.test_protocols)
         
+    #function for celcius
     def celcius_flag(self):
         global C_flag
         C_flag=0
-        
+    #function for farenheit   
     def farenheit_flag(self):
         global C_flag
         C_flag=1
+    
+    #
+    #function to request values from the queue
+    #
+    #plots a graph for the various values of data
+    #
+    #
+    #
+    #
+    #
+    #
     
     def myfunction(self):
         global value_temp
@@ -435,7 +458,15 @@ class Ui_Dialog(object):
         plt.title('Time for different fields')
         plt.show()
         
-             
+    #
+    #Actual test of protocols takes place here
+    #
+    #measures time for exchange of each transaction
+    #
+    #Sends message and for each transaction records the return time
+    #
+    #plots time for each message exchange
+    #         
     
     def test_protocols(self):
         """
@@ -516,7 +547,12 @@ class Ui_Dialog(object):
         plt.plot(mqtt_rtt)
         plt.plot(coap_rtt)  
         plt.show()
-    
+
+#functions specific to each protocol
+#
+#activates server and loop time
+#
+#calculates difference    
     
 def mqtt_server():
     client.on_connect = on_connect
@@ -551,6 +587,7 @@ async def coapPUT(data): #function to transfer data using COAP
     response = await context.request(request).response
     print('Result: %s\n%r'%(response.code, response.payload))
 
+    
     
     
     
