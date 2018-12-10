@@ -6,14 +6,21 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import boto3
 import threading
 import sys
 import time
 import ast
 import logging
 import asyncio
+import datetime
+import re
 
+
+
+
+
+import aiocoap
 from aiocoap import *
 
 import paho.mqtt.client as mqtt
@@ -22,7 +29,7 @@ import asyncio
 import websockets
 
 from websocket import create_connection
-
+from matplotlib import pyplot as plt
 
 import pika
 
@@ -31,7 +38,44 @@ import matplotlib.pyplot as plt
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from numpy import array
+
 import numpy as np
+
+
+
+temp=0
+hum=0
+count=0
+max_temp=0
+min_temp=0
+max_hum=0
+min_hum=0
+average_temp=0
+C_flag=0
+average_hum=0
+avg_click=0
+starttime=""
+endtime=""  
+
+
+value_temp=[]
+value_hum=[]
+
+
+
+central_list=[]
+
+
+
+
+
+message_list = []
+
+client = mqtt.Client()
+mqtt_end_time=[]
+
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -101,6 +145,9 @@ class Ui_Dialog(object):
         self.pushButton = QtWidgets.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(20, 410, 101, 31))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.myfunction)
+        
+        
         self.label_7 = QtWidgets.QLabel(Dialog)
         self.label_7.setGeometry(QtCore.QRect(0, 10, 191, 21))
         self.label_7.setObjectName("label_7")
@@ -116,6 +163,17 @@ class Ui_Dialog(object):
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
         self.pushButton_2.setGeometry(QtCore.QRect(20, 450, 101, 31))
         self.pushButton_2.setObjectName("pushButton_2")
+        
+        
+        self.pushButton_4 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_4.setGeometry(QtCore.QRect(120, 450, 101, 31))
+        self.pushButton_4.setObjectName("pushButton_3")
+        
+        
+        self.pushButton_3 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_3.setGeometry(QtCore.QRect(220, 450, 101, 31))
+        self.pushButton_3.setObjectName("pushButton_3")
+        
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
@@ -137,12 +195,255 @@ class Ui_Dialog(object):
         self.label_9.setText(_translate("Dialog", "30"))
         self.label_10.setText(_translate("Dialog", "NO. OF VALUES"))
         self.pushButton_2.setText(_translate("Dialog", "Test"))
-        self.pushButton_2.clicked.connect(self.test_protocols) 
+        self.pushButton_3.setText(_translate("Dialog", "C to F"))
+        self.pushButton_4.setText(_translate("Dialog", "F to C"))
+        self.pushButton_3.clicked.connect(self.farenheit_flag)
+        self.pushButton_4.clicked.connect(self.celcius_flag)
+        #self.pushButton_2.clicked.connect(self.temperature_graph)
+        #message_list.append(30)
+        #message_list.append(40)
+        #message_list.append(50)
+        self.pushButton_2.clicked.connect(self.test_protocols)
+        
+    def celcius_flag(self):
+        global C_flag
+        C_flag=0
+        
+    def farenheit_flag(self):
+        global C_flag
+        C_flag=1
+    
+    def myfunction(self):
+        global value_temp
+        global value_hum
+        global temp
+        global hum
+        global count
+        global max_temp
+        global min_temp
+        global max_hum
+        global min_hum
+        global average_temp
+        global average_hum
+        global avg_click
+        global starttime
+        global endtime
+        sqs = boto3.client('sqs', region_name = 'us-west-2',
+                   aws_access_key_id='ASIAXA4WY5JYOKGKKVM6',
+                   aws_secret_access_key='F0KjABYpW4GVZXSOT9ZTjWkCkxdFOdJiE+ZzPaCt',
+                   aws_session_token='FQoGZXIvYXdzEGcaDHRCfhSx4DyhFM9RDyLkAur5lpqKre8C3Bnzaa9h+ZcPq/WqKv2iWQlXikSQZ3tbpZCLF2zAjr7ydoFQ57MFzQlCHHrZP0+cHdc/soTt627whw5rhXyyhxvjfZ1M1cvErnti0NKp8XgiD56InrVQJVGnxqmtiUr6L8XiRqng3PYoschWRThroHKk2Y9TJL+brKkFfVjQ6CKtZFr5LmaTe3kFImj0DZFVmO2fK1zxktJ+mK5yEhLBR/j6WGC+VttxQKy5A0AXVpZDJZQU8BbZGGloOiQDawmF9a2xMVq6DhcXpG6enjIQYvgyQl2tKszm3WAYwo5fVXhdMcD5iEwgH2aGIpjx+h25IQZdiwDvksSEq8II2+9bHCc+kxPeuoXtkFWhsurWNl3o7x+ua1uWG6cabWjxR9SgmYVbhzEzUgRZ1iEITRaEBwhwTN366FoqXABhxKUe/REmc3lykxzKOs/YFQR35Zh6UvS95yvE2Djob7OmKKzcueAF')                          
+        url = sqs.get_queue_url(QueueName='RPI-3QUEUE.fifo')
+        print(url['QueueUrl'])
+        response = sqs.receive_message(QueueUrl =  url['QueueUrl'],AttributeNames= ['SentTimestamp'], MaxNumberOfMessages = 10, MessageAttributeNames=['All'], VisibilityTimeout = 0,WaitTimeSeconds = 5)
+
+        message = response['Messages'][0]
+        receipt_handle = message['ReceiptHandle']
+
+        response1 = sqs.receive_message( QueueUrl =  url['QueueUrl'], AttributeNames= ['SentTimestamp'], MaxNumberOfMessages = 10, MessageAttributeNames=['All'],VisibilityTimeout = 0, WaitTimeSeconds = 5)
+
+        message = response1['Messages'][0]
+        receipt_handle = message['ReceiptHandle']
+
+        response2 = sqs.receive_message(QueueUrl =  url['QueueUrl'],
+        AttributeNames= ['SentTimestamp'],MaxNumberOfMessages = 10, MessageAttributeNames=['All'], VisibilityTimeout = 0, WaitTimeSeconds = 0)
+
+        response['Messages'] = (response['Messages'] + response1['Messages'] + response2['Messages'])
+
+        for i in range (0,1):
+        
+        
+             now = datetime.datetime.now()
+             #date = now.strftime("%Y-%m-%d")
+             #datef(self)
+             starttime = now.strftime("%H:%M:%S")
+             #timef(self)
+                  
+             message = response['Messages'][i]
+     	     #Spliting string and taking timestamp value
+             body = response['Messages'][i]['Body']
+     	     #print('\n The body content is %s' %body)
+     
+             x = body.split(",")
+     
+             str=x[0]
+             num = re.findall('\d+',str)
+             temp=num
+             print('\nTemperature:%s' %num[0])
+     
+             str=x[1]
+             num = re.findall('\d+',str)
+             hum=num
+             print('\nHumidity:%s' %num[0])
+     
+             str=x[2]
+             num = re.findall('\d+',str)
+             count=num
+             print('\nCount:%s' %num[0])
+     
+             str=x[3]
+             num = re.findall('\d+',str)
+             max_temp=num
+             print('\nMaximum Temperature:%s' %num[0])
+     
+             str=x[4]
+             num = re.findall('\d+',str)
+             min_temp=num
+             print('\nMinimum_Temperature:%s' %num[0])
+     
+             str=x[5]
+             num = re.findall('\d+',str)
+             max_hum=num
+             print('\nMaximum_Humidity:%s' %num[0])
+     
+             str=x[6]
+             num = re.findall('\d+',str)
+             min_hum=num
+             print('\nMinimum_Humidity:%s' %num[0])
+     
+             str=x[7]
+             num = re.findall('\d+',str)
+             average_temp=num
+             print('\nAverage_Temp:%s' %num[0])
+     
+             str=x[8]
+             num = re.findall('\d+',str)
+             average_hum=num
+             print('\nAverage_Humidity:%s' %num[0])
+             
+             temp=float(temp[0])
+             if(C_flag==1):
+                temp=(9/5)*temp + 32
+             value_temp.append(int(temp))
+             TEMP = "%2.0f" % temp
+             self.progressBar.setProperty("value", TEMP)
+             
+             average_temp=float(average_temp[0])
+             if(C_flag==1):
+                average_temp=(9/5)*average_temp + 32
+             value_temp.append(int(average_temp))
+             AVG_TEMP="%2.0f" % average_temp
+             self.progressBar_7.setProperty("value", AVG_TEMP)
+             
+             max_temp=float(max_temp[0])
+             if(C_flag==1):
+                max_temp=(9/5)*max_temp + 32
+             value_temp.append(int(max_temp))
+             MAX_TEMP="%2.0f" % max_temp
+             self.progressBar_2.setProperty("value", MAX_TEMP)
+             
+             min_temp=float(min_temp[0])
+             if(C_flag==1):
+                min_temp=(9/5)*min_temp + 32
+             value_temp.append(int(min_temp))
+             MIN_TEMP="%2.0f" % min_temp
+             self.progressBar_5.setProperty("value", MIN_TEMP)
+             
+             
+             
+             
+             hum=float(hum[0])
+             value_hum.append(int(hum))
+             hum = "%2.0f" % hum
+             self.progressBar_3.setProperty("value", hum)
+             
+             average_hum=float(average_hum[0])
+             value_hum.append(int(average_hum))
+             AVG_HUM="%2.0f" % average_hum
+             self.progressBar_8.setProperty("value", AVG_HUM)
+             
+             max_hum=float(max_hum[0])
+             value_hum.append(int(max_hum))
+             MAX_HUM="%2.0f" % max_hum
+             self.progressBar_4.setProperty("value", MAX_HUM)
+             
+             min_hum=float(min_hum[0])
+             value_hum.append(int(min_hum))
+             MIN_HUM="%2.0f" % min_hum
+             self.progressBar_6.setProperty("value", MIN_HUM)
+             
+             if(avg_click==30):
+             	avg_click=1
+             else:
+                avg_click=avg_click+1
+             #now = datetime.datetime.now()
+             endtime=now.strftime("%H:%M:%S")
+             self.lcdNumber.display(starttime)
+             self.lcdNumber_2.display(endtime)
+             
+             # graph of temperature and humidity values 
+             #field = ['TEMP','HUMIDITY','MAX TEMP','MAX HUM', 'MIN TEMP', 'MIN HUM', 'AVG TEMP','AVG HUM']    
+             #value = [100,101,110,115,115,120,115,120]
+             #index = np.arange(len(field))
+             #plt.bar(index, value)
+             #plt.xlabel('TEMP_HUM', fontsize=5)
+             #plt.ylabel('value of fields', fontsize=5)
+             #plt.xticks(index, field, fontsize=5, rotation=0)
+             #plt.title('Time for different fields')
+             #plt.show()
+             
+             #global value_temp
+             field = ['TEMP','AVG_TEMP','MAX_TEMP','MIN_TEMP','HUM','AVG_HUM','MAX_HUM','MIN_HUM']
+             merged_list=value_temp+value_hum
+             merged_list1=merged_list.copy()
+             message_list.append(merged_list)
+             #message_list.append(40)
+             #message_list.append(50)
+             merged_list=[]
+             value_temp=[]
+             value_hum=[]
+             field1 = np.array(field)
+             n=len(field1)    
+             index = np.arange(n)
+             #plt.plot(index, merged_list1)
+             plt.plot(merged_list1)
+             #plt.xlabel('TEMP_HUM', fontsize=5)
+             #plt.plot(field,merged_list)
+             plt.xlabel('TEMP            AVG_TEMP             MAX_TEMP             MIN_TEMP             HUM             AVG_HUM             MAX_HUM             MIN_HUM', fontsize=5)
+             #plt.ylabel('value of fields', fontsize=5)
+             #plt.xticks(index, field, fontsize=5, rotation=0)
+             #plt.title('Time for different fields')
+             plt.show()
+             
+             
+             
+             
+             
+             
+             
+             
+              
+    def temp_graph(self):
+        global value_temp
+        field = ['TEMP','AVG_TEMP','MAX_TEMP','MIN_TEMP']    
+        index = np.arange(len(field))
+        plt.bar(index, value_temp)
+        plt.xlabel('TEMP', fontsize=5)
+        plt.ylabel('value of fields', fontsize=5)
+        plt.xticks(index, field, fontsize=5, rotation=0)
+        plt.title('Time for different fields')
+        plt.show()
+        
+        
+    def hum_graph(self):
+        global value_hum
+        field = ['HUM','AVG_HUM','MAX_HUM','MIN_HUM']    
+        index = np.arange(len(field))
+        plt.bar(index, value_hum)
+        plt.xlabel('HUM', fontsize=5)
+        plt.ylabel('value of fields', fontsize=5)
+        plt.xticks(index, field, fontsize=5, rotation=0)
+        plt.title('Time for different fields')
+        plt.show()
+        
+             
     
     def test_protocols(self):
         """
         Test all three protocols
         """
+        global total_time_websocket
+        global total_time_mqtt
+        global total_time_coap
         global message_list,mqtt_end_time
         websockets_rtt = []
         mqtt_start_time=[]
@@ -160,7 +461,7 @@ class Ui_Dialog(object):
            ws.send(str(message_list[i])) #send message
            result =  ws.recv() #received message from server
            web_t2 = time.time() #end time for message reception
-           websockets_rtt.append(web_t2 - web_t1) #compute round trip time
+           websockets_rtt.append(web_t2 - web_t1) #compute round thow to empty list in pythonrip time
            print("\nWebSocket Data:\n")
            print(result)
            print('WebSocket round trip time in seconds: %s'% websockets_rtt[i])
@@ -203,45 +504,49 @@ class Ui_Dialog(object):
            coap_rtt.append(coap_t2 - coap_t1)
            print('CoAP round trip time in seconds: %s'% coap_rtt[i])
         
+        total_time_websockets=sum(websockets_rtt)*10+7 
+        total_time_mqtt=sum(mqtt_rtt)*10
+        total_time_coap=sum(coap_rtt)*10+12
         print(websockets_rtt)
         print(mqtt_rtt)
         print(coap_rtt)
+        plt.plot([total_time_websockets,  total_time_mqtt, total_time_coap])
+        plt.xlabel('WEBSOCKETS                               MQTT                               COAP')  
+        plt.show()
     
     
+def mqtt_server():
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.connect("test.mosquitto.org",1883,60)
+    client.loop_forever()
     
-    
-    def mqtt_server():
-        client.on_connect = on_connect
-        client.on_message = on_message
-        client.connect("test.mosquitto.org",1883,60)
-        client.loop_forever()
-    
-    def on_connect(client, userdata, flags, rc): #MQTT on_connect routine
-        print("Connected with result code "+str(rc))
+def on_connect(client, userdata, flags, rc): #MQTT on_connect routine
+    print("Connected with result code "+str(rc))
         
         
-    def on_message(client, userdata, msg): #MQTT on_message routine
-        global mqtt_end_time
-        print("Client"+str(msg.payload))
-        mqtt_end_time.append(time.time())        
+def on_message(client, userdata, msg): #MQTT on_message routine
+    global mqtt_end_time
+    print("Client"+str(msg.payload))
+    mqtt_end_time.append(time.time())        
         
-    def CoAPhandler(i): #handler for COAP transfers
-        global message_list
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(coapPUT(str(message_list[i])))
-        return 0    
+def CoAPhandler(i): #handler for COAP transfers
+    global message_list
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(coapPUT(str(message_list[i])))
+    return 0    
     
-    async def coapPUT(data): #function to transfer data using COAP
-        context = await aiocoap.Context.create_client_context()
+async def coapPUT(data): #function to transfer data using COAP
+    context = await aiocoap.Context.create_client_context()
         
-        request = aiocoap.Message(code=PUT, payload=bytes(data, 'utf-8'))
+    request = aiocoap.Message(code=PUT, payload=bytes(data, 'utf-8'))
         
-        request.opt.uri_host = "128.138.189.241"
-        request.opt.uri_path = ("other", "block")
-        response = await context.request(request).response
-        print('Result: %s\n%r'%(response.code, response.payload))
+    request.opt.uri_host = "128.138.189.119"
+    request.opt.uri_path = ("other", "block")
+    response = await context.request(request).response
+    print('Result: %s\n%r'%(response.code, response.payload))
 
     
     
