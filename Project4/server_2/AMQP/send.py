@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import pika
-
+#
+#Adapted from the example files given in README.md
+#
+#
+#
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 
